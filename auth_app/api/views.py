@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.conf import settings
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -65,9 +67,7 @@ class ActivateView(APIView):
                 serializer = ActivateSerializer(user, data={}, partial=True)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
-                return Response({
-                    'message': 'Account successfully activated.'
-                }, status=status.HTTP_200_OK)
+                return redirect('activation_success')
             else: 
                 return Response({
                     'message': 'User is already activated.'
@@ -78,11 +78,22 @@ class ActivateView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
 
+
+def activation_success(request):
+    """
+        Activate succeed
+    """
+    return render(request, 'auth_app/user_activated.html')
+        
+
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
+        """
+           Login View accept post 
+        """
         serializer = self.get_serializer(data=request.data)
 
         try:
@@ -191,7 +202,7 @@ class PasswordResetView(APIView):
         
         token = default_token_generator.make_token(user)
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_link = f'http://localhost:4200/pages/auth/confirm_password.html?uid={uidb64}&token={token}'
+        reset_link = f'http://127.0.0.1:5500/pages/auth/confirm_password.html?uid={uidb64}&token={token}'
 
         enqueue_after_commit(send_passwordreset_email, user.email, reset_link)
       
