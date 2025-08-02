@@ -23,3 +23,5 @@ RUN chmod +x backend.entrypoint.sh
 EXPOSE 8000
 
 ENTRYPOINT ["./backend.entrypoint.sh"]
+
+

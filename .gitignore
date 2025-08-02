@@ -12,4 +12,3 @@ ENV/
 *.py[cod]
 
 media
-static

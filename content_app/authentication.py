@@ -2,6 +2,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
+        """
+            Cusom authentication if access_token is valid
+        """
         access_token = request.COOKIES.get('access_token')
 
         if access_token is None:

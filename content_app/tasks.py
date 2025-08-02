@@ -39,6 +39,9 @@ def convert_resolutions_to_hls(source):
 
     
 def delete_hls_files(video_path):
+    """
+        Delete files
+    """
     base, _ = os.path.splitext(video_path)
 
     for res in resolutions:

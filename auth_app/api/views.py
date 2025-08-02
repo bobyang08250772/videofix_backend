@@ -6,6 +6,7 @@ from django.utils.encoding import force_bytes
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
+from urllib.parse import quote
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -33,7 +34,7 @@ class RegisterView(APIView):
 
         token = default_token_generator.make_token(user)
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-        activation_link = f"http://localhost:8000/api/activate/{uidb64}/{token}/"
+        activation_link = f"http://127.0.0.1:5500/pages/auth/activate.html?uid={quote(uidb64)}&token={quote(token)}"
 
         enqueue_after_commit(send_activation_email, user.email, activation_link)
 
@@ -67,7 +68,9 @@ class ActivateView(APIView):
                 serializer = ActivateSerializer(user, data={}, partial=True)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
-                return redirect('activation_success')
+                return Response({
+                    'message': 'User is now activated.'
+                }, status=status.HTTP_200_OK)
             else: 
                 return Response({
                     'message': 'User is already activated.'
